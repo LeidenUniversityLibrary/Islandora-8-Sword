@@ -1,0 +1,4 @@
+administer sword configuration:
+  title: 'Administer sword configuration'
+  description: 'Optional description.'
+  restrict access: true

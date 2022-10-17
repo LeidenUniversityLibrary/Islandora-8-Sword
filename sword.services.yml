@@ -1,0 +1,3 @@
+services:
+  sword.api:
+    class: Drupal\sword\Api

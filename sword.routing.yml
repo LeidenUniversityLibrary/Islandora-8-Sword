@@ -1,0 +1,15 @@
+sword.servicedocument:
+  path: '/sword/{api_prefix}/{api_postfix}'
+  defaults:
+    _title: 'Service document'
+    _controller: '\Drupal\sword\Controller\SwordController::serviceDocument'
+  requirements:
+    _permission: 'access content'
+
+sword.settings_form:
+  path: '/admin/config/system/sword'
+  defaults:
+    _title: 'sword settings'
+    _form: 'Drupal\sword\Form\SettingsForm'
+  requirements:
+    _permission: 'administer sword configuration'

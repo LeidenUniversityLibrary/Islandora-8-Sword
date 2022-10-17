@@ -1,0 +1,5 @@
+name: sword
+type: module
+description: Module for instantly importing objects by using a SWORD api
+package: Custom
+core_version_requirement: ^9 || ^10

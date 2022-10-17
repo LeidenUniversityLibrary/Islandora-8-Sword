@@ -58,14 +58,10 @@ class SwordController extends ControllerBase {
     if(in_array($api_prefix,$sword_api) && in_array($api_postfix,$sword_api)){
       return $this->api->swordCollection();
 
-      $response = new Response();
-      $response->headers->set('Content-Type', 'application/xml');
-      $response->setContent($document);
     } else {
       throw new NotFoundHttpException();
     }
 
-    return $response;
   }
 
 

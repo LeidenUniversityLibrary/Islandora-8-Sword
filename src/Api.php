@@ -23,17 +23,42 @@ class Api {
    */
   function getConfigValues(){
 
-    $config = [];
 
-    $config['swordimportusername'] = \Drupal::config('sword.settings')->get('swordimportusername');
-    $config['swordbase'] = \Drupal::config('sword.settings')->get('swordbase');
-    $config['swordservicepath'] = \Drupal::config('sword.settings')->get('swordservicepath');
-    $config['swordcollectionname'] = \Drupal::config('sword.settings')->get('swordcollectionname');
-    $config['swordacceptmimetype'] = \Drupal::config('sword.settings')->get('swordacceptmimetype');
-    $config['swordacceptpackaging'] = \Drupal::config('sword.settings')->get('swordacceptpackaging');
+$config['swordimportusername'] = \Drupal::config('sword.settings')->get('swordimportusername');
+  $config['swordbase'] = \Drupal::config('sword.settings')->get('swordbase');
+   $config['swordservicepath'] = \Drupal::config('sword.settings')->get('swordservicepath');
+   $config['swordcollectionname'] = \Drupal::config('sword.settings')->get('swordcollectionname');
+   $config['swordacceptmimetype'] = \Drupal::config('sword.settings')->get('swordacceptmimetype');
+   $config['swordacceptpackaging'] = \Drupal::config('sword.settings')->get('swordacceptpackaging');
 
     return $config;
   }
+
+
+  /**
+   * @return string|Response
+   */
+  function swordCollection() {
+
+    $method = $_SERVER['REQUEST_METHOD'];
+    if ($method === 'GET') {
+      return $this->getServiceDocument();
+    }
+
+    if ($method === 'POST') {
+      return $this->handleCollectionPost();
+    }
+    else if ($method === 'PUT') {
+      return  $this->swordResponse('Method Not Allowed', array('Status' => 405));
+    }
+    else if ($method === 'DELETE') {
+      return $this->swordResponse('Method Not Allowed', array('Status' => 405));
+    }
+    else {
+      return $this->swordResponse('Not Implemented', array('Status' => 501));
+    }
+  }
+
   /**
    * Response for a service document request.
    * @return string
@@ -90,32 +115,6 @@ XML;
   }
 
 
-  /**
-   * Response for a collection request.
-   *
-   * @param int $id
-   *   The id of the instant importer.
-   */
-  function swordCollection() {
-
-    $method = $_SERVER['REQUEST_METHOD'];
-    if ($method === 'GET') {
-      return $this->getServiceDocument();
-    }
-
-    if ($method === 'POST') {
-      return $this->handleCollectionPost();
-    }
-    else if ($method === 'PUT') {
-      return  $this->swordResponse('Method Not Allowed', array('Status' => 405));
-    }
-    else if ($method === 'DELETE') {
-      return $this->swordResponse('Method Not Allowed', array('Status' => 405));
-    }
-    else {
-      return $this->swordResponse('Not Implemented', array('Status' => 501));
-    }
-  }
 
   function handleCollectionPost() {
 
@@ -128,7 +127,7 @@ XML;
         list($name, $pw) = explode(':', base64_decode($authcontent));
         $username = $this->configValues['swordimportusername'];
         if ($name === $username) {
-          $uid = user_authenticate($name, $pw);
+          $uid = \Drupal::service('user.auth')->authenticate($name, $pw);
           $isauthenticated = ($uid !== FALSE);
         }
       }
@@ -139,10 +138,11 @@ XML;
 
     // Check mimetypes
     $acceptmimetypes = $this->configValues['swordacceptmimetype'];
+
     $acceptmimetypes = explode(',', $acceptmimetypes);
     $mimetype = $_SERVER['CONTENT_TYPE'];
     if (!in_array($mimetype, $acceptmimetypes)) {
-      return $this->swordErrorResponse(415, 'http://purl.org/net/sword/error/ErrorContent', t('The mime-type !mime is not supported', array('!mime' => $mimetype)));
+      return $this->swordErrorResponse(415, 'http://purl.org/net/sword/error/ErrorContent', $this->t('The mime-type !mime is not supported', array('!mime' => $mimetype)));
     }
     // Check packaging
     $acceptpackaging = $this->configValues['swordacceptpackaging'];
@@ -150,7 +150,7 @@ XML;
     $acceptpackaging = array_map(function($ap) { return explode(' ', $ap)[0]; }, $acceptpackaging);
     $packaging = $_SERVER['HTTP_X_PACKAGING'];
     if (!in_array($packaging, $acceptpackaging)) {
-      return $this->swordErrorResponse(415, 'http://purl.org/net/sword/error/ErrorContent', t('The mime-type !mime is not supported', array('!packaging' => $packaging)));
+      return $this->swordErrorResponse(415, 'http://purl.org/net/sword/error/ErrorContent', t('The packagin !packaging is not supported', array('!packaging' => $packaging)));
     }
 
     // X-No-Op header
@@ -175,7 +175,7 @@ XML;
 
   function swordErrorResponse( $statuscode, $erroruri, $errorsummary) {
     $swordbase = $this->configValues['swordbase'];
-    $generatoruri = url($swordbase, array('absolute' => TRUE));
+    $generatoruri  =Url::fromUserInput('/'.$swordbase, array('absolute' => TRUE))->toString();
     $updatedate = date('Y-m-d\TH:i:s\Z');
     $errorhref = isset($erroruri) ? 'href="' . $erroruri . '"' : '';
     $errorxml = <<<XML
@@ -186,7 +186,7 @@ XML;
        $errorhref>
   <title>ERROR</title>
   <updated>$updatedate</updated>
-  <sword:userAgent>Islandora Instant Importer (SWORD activator)</sword:userAgent>
+  <sword:userAgent>Islandora SWORD Importer</sword:userAgent>
   <generator uri="$generatoruri"/>
   <summary>$errorsummary</summary>
   <sword:treatment>processing failed</sword:treatment>
@@ -221,7 +221,7 @@ XML;
     $updatedate = date('Y-m-d\TH:i:s\Z');
     $swordbase = $this->configValues['swordbase'];
     $generatoruri = Url::fromUserInput('/'.$swordbase . '/' . $this->setNamePath($swordbase), array('absolute' => TRUE))->toString();
-    $objecturl =Url::fromUserInput('islandora/object/' . $pid, array('absolute' => TRUE))->toString();
+    $objecturl =Url::fromUserInput('/islandora/object/' . $pid, array('absolute' => TRUE))->toString();
     $packagingxml = '';
     if (is_array($packaging)) {
       foreach ($packaging as $p) {

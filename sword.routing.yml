@@ -13,3 +13,5 @@ sword.settings_form:
     _form: 'Drupal\sword\Form\SettingsForm'
   requirements:
     _permission: 'administer sword configuration'
+  options:
+    _admin_route: TRUE

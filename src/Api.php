@@ -3,6 +3,7 @@
 namespace Drupal\sword;
 
 use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -40,11 +41,13 @@ $config['swordimportusername'] = \Drupal::config('sword.settings')->get('swordim
    */
   function swordCollection() {
 
-    $method = $_SERVER['REQUEST_METHOD'];
+
+    $request = new Request();
+
+    $method = $request->getMethod(); //$_SERVER['REQUEST_METHOD'];
     if ($method === 'GET') {
       return $this->getServiceDocument();
     }
-
     if ($method === 'POST') {
       return $this->handleCollectionPost();
     }

@@ -2,23 +2,11 @@
 
 ## Introduction
 
-Islandora Instant Importer is a module that can convert any data into a (complex) Islandora object and instantly import the object.
-This module can be used to activate the islandora instant importer by providing the SWORD v1.3 API.
-
-## Requirements
-
-This module requires the following modules/libraries:
-
-* [Islandora](https://github.com/islandora/islandora)
-* [Islandora Instant Importer](https://github.com/LeidenUniversityLibrary/islandora_instant_importer)
-
-## Installation
-
-Install as usual, see [this](https://drupal.org/documentation/install/modules-themes/modules-7) for further information.
+This module provides the SWORD v1.3 API.
 
 ## Configuration
 
-When configuring an Islandora Instant Importer, choose as activation method SWORD v1 and then fill out the following:
+When configuring the SWORD v1 fill out the following:
 * Import user name: when a POST is done (creating a resource), this user's name and password should be used for basic authentication. If valid, this user is used as the one doing the import.
 * Base URL path: the base URL path for the SWORD api. Do not use a leading slash.
 * Service path: the path for the service document.
@@ -42,9 +30,4 @@ Current maintainers:
 ## Development
 
 If you would like to contribute to this module, please contact the current maintainer.
-
-## License
-
-[GPLv3](LICENSE.txt)
-Copyright 2019 Leiden University Library
 

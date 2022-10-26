@@ -3,8 +3,7 @@
 namespace Drupal\sword\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\sword\Api;
-use JetBrains\PhpStorm\NoReturn;
+use Drupal\sword\Services\SwordRequestManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,19 +14,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SwordController extends ControllerBase {
 
   /**
-   * @var Api
+   * @var SwordRequestManager
    */
-  protected Api $api;
+  protected SwordRequestManager $swordRequestManager;
 
-  public function __construct(Api $api)
+  public function __construct(SwordRequestManager $swordRequestManager)
   {
-    $this->api = $api;
+    $this->swordRequestManager = $swordRequestManager;
   }
 
   public static function create(ContainerInterface $container)
   {
     return new static(
-      $container->get('sword.api')
+      $container->get('sword.request.manager')
     );
   }
 
@@ -51,12 +50,14 @@ class SwordController extends ControllerBase {
    */
   public function serviceDocument(string $api_prefix, string $api_postfix){
 
+
+    $swordRequestManager = \Drupal::service('sword.request.manager');
     $swordbase =\Drupal::config('sword.settings')->get('swordbase');
 
     $sword_api = explode("/",$swordbase);
 
     if(in_array($api_prefix,$sword_api) && in_array($api_postfix,$sword_api)){
-      return $this->api->swordCollection();
+      return $swordRequestManager->swordCollection();
 
     } else {
       throw new NotFoundHttpException();

@@ -1,3 +1,4 @@
 services:
-  sword.api:
-    class: Drupal\sword\Api
+  sword.request.manager:
+    class: Drupal\sword\Services\SwordRequestManager
+    arguments: ['@config.factory','@request_stack']

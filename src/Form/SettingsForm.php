@@ -28,55 +28,55 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['swordimportusername'] = [
+    $form['importusername'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Import user name'),
-      '#default_value' => $this->config('sword.settings')->get('swordimportusername'),
+      '#default_value' => $this->config('sword.settings')->get('importusername'),
       '#description' => $this->t('Run the instant importer as this user. This user is also used for basic authentication.'),
       '#required' => TRUE,
       '#size' => 100,
 
     ];
-    $form['swordbase'] = [
+    $form['base_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Base URL path'),
-      '#default_value' => $this->config('sword.settings')->get('swordbase'),
+      '#default_value' => $this->config('sword.settings')->get('base_url'),
       '#description' => $this->t('The base URL path for the SWORD api, without the leading slash, for example instant_importer/swordv1'),
       '#required' => TRUE,
       '#size' => 100,
 
     ];
-    $form['swordservicepath'] = [
+    $form['servicepath'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Service path'),
-      '#default_value' => $this->config('sword.settings')->get('swordservicepath'),
+      '#default_value' => $this->config('sword.settings')->get('servicepath'),
       '#description' => $this->t('The path for the service document, for example servicedocument. The full URL to the service document is {server url}/{Base URL path}/{Service path}.'),
       '#required' => TRUE,
       '#size' => 100,
 
     ];
-    $form['swordcollectionname'] = [
+    $form['collectionname'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Collection name'),
-      '#default_value' => $this->config('sword.settings')->get('swordcollectionname'),
+      '#default_value' => $this->config('sword.settings')->get('collectionname'),
       '#description' => $this->t('The name of the collection to use for ingesting via SWORD. This collection does not have to exist and is not used by the instant importer. Use the workflow to select the collection to ingest into.'),
       '#required' => TRUE,
       '#size' => 100,
 
     ];
-    $form['swordacceptmimetype'] = [
+    $form['acceptmimetype'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Accepted MIME type'),
-      '#default_value' => $this->config('sword.settings')->get('swordacceptmimetype'),
+      '#default_value' => $this->config('sword.settings')->get('acceptmimetype'),
       '#description' => $this->t('The MIME type(s) that are accepted by this instant importer, separated by comma\'s.'),
       '#required' => TRUE,
       '#size' => 255,
 
     ];
-    $form['swordacceptpackaging'] = [
+    $form['acceptpackaging'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Accepted packaging'),
-      '#default_value' => $this->config('sword.settings')->get('swordacceptpackaging'),
+      '#default_value' => $this->config('sword.settings')->get('acceptpackaging'),
       '#description' => $this->t('The packaging format as a URI, optionally followed by a space and a quality value (floating-point value between 0 and 1), separated by comma\'s.'),
       '#required' => TRUE,
       '#size' => 255,
@@ -101,12 +101,12 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('sword.settings')
-      ->set('swordimportusername', $form_state->getValue('swordimportusername'))
-      ->set('swordbase', $form_state->getValue('swordbase'))
-      ->set('swordservicepath', $form_state->getValue('swordservicepath'))
-      ->set('swordcollectionname', $form_state->getValue('swordcollectionname'))
-      ->set('swordacceptmimetype', $form_state->getValue('swordacceptmimetype'))
-      ->set('swordacceptpackaging', $form_state->getValue('swordacceptpackaging'))
+      ->set('importusername', $form_state->getValue('importusername'))
+      ->set('base_url', $form_state->getValue('base_url'))
+      ->set('servicepath', $form_state->getValue('servicepath'))
+      ->set('collectionname', $form_state->getValue('collectionname'))
+      ->set('acceptmimetype', $form_state->getValue('acceptmimetype'))
+      ->set('acceptpackaging', $form_state->getValue('acceptpackaging'))
       ->save();
     parent::submitForm($form, $form_state);
   }
